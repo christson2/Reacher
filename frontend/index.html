@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FreeMart — Find products, services & jobs near you</title>
+  <link rel="stylesheet" href="./public/assets/css/styles.css" />
+  <script>
+  // replace host:port with your backend address if different
+  window.__API_BASE__ = "http://localhost:4000/api";
+  </script>
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <div class="brand-name">FreeMart</div>
+      <div class="brand-tag">Find local products, services & jobs</div>
+    </div>
+
+    <nav class="auth">
+      <button id="loginBtn" class="btn link">Login</button>
+      <button id="signupBtn" class="btn primary">Sign Up</button>
+    </nav>
+  </header>
+
+  <main class="container" role="main">
+    <section class="hero" aria-labelledby="heroTitle">
+      <h1 id="heroTitle">Welcome to <span class="accent">FreeMart</span></h1>
+      <p class="lead">Quickly access any products or services close to you in a few seconds.</p>
+
+      <div class="hero-cta">
+        <button id="getStarted" class="btn primary large">Get Started</button>
+        <div class="muted-small mt-8">No credit card required • Free to join</div>
+      </div>
+    </section>
+
+    <section class="search-panel" aria-labelledby="searchTitle">
+      <h2 id="searchTitle" class="visually-hidden">Search FreeMart</h2>
+
+      <div class="search-options" role="tablist" aria-label="Search type">
+        <button class="search-option" data-type="product" id="opt-product" role="tab" aria-selected="true">Search Products</button>
+        <button class="search-option" data-type="service" id="opt-service" role="tab" aria-selected="false">Search Service Providers</button>
+        <button class="search-option" data-type="job" id="opt-job" role="tab" aria-selected="false">Search Jobs</button>
+      </div>
+
+      <form id="searchForm" class="search-form" role="search" aria-label="Search form">
+        <label for="searchInput" class="sr-only">Search input</label>
+        <input id="searchInput" class="input" type="search" placeholder="Enter product name" aria-label="Search input" />
+        <button id="searchSubmit" class="btn primary" type="submit">Search</button>
+        <button id="clearSearch" class="btn link" type="button">Clear</button>
+      </form>
+    </section>
+
+    <section id="resultsSection" class="results-section" aria-live="polite">
+      <!-- Results will be injected here -->
+    </section>
+
+    <section id="promoSection" class="promo-section" aria-labelledby="promoTitle">
+      <h3 id="promoTitle">Promotional posts near you</h3>
+      <div id="promoList" class="promo-list" aria-live="polite"></div>
+    </section>
+
+    <section class="cta-banner" aria-label="Sell or provide services">
+      <p class="cta-text">Let people around you know what you sell or what you do and patronize you.</p>
+      <button id="ctaGetStarted" class="btn primary large">Get Started</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>FreeMart © 2025 — Connecting local communities</p>
+  </footer>
+
+  <script src="./public/assets/js/app.js" defer></script>
+  
+  <script>
+    // Get started / auth buttons: decide navigation by verifying token/profile status
+    (function () {
+      const loginBtn = document.getElementById('loginBtn');
+      const signupBtn = document.getElementById('signupBtn');
+      const getStarted = document.getElementById('getStarted');
+      const ctaGetStarted = document.getElementById('ctaGetStarted');
+
+      function goToProfileSelector() { window.location.href = 'pages/profile-selector.html'; }
+      function goToSignup() { window.location.href = 'pages/signup.html'; }
+      function goToLogin() { window.location.href = 'pages/login.html'; }
+      function goToProfileSetup() { window.location.href = 'pages/profile-setup.htm'; }
+
+      // Always bind Login and Sign Up buttons to their pages (users expect these links)
+      loginBtn && loginBtn.addEventListener('click', goToLogin);
+      signupBtn && signupBtn.addEventListener('click', goToSignup);
+
+      async function decideNavigation() {
+        const token = localStorage.getItem('jwt_token');
+        if (!token) {
+          // Not logged in: Get Started buttons go to signup by default
+          getStarted && getStarted.addEventListener('click', goToSignup);
+          ctaGetStarted && ctaGetStarted.addEventListener('click', goToSignup);
+          return;
+        }
+
+        // Token exists: verify with backend and decide where Get Started goes
+        try {
+          const res = await fetch(`${window.__API_BASE__}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error('invalid-token');
+          const user = await res.json();
+
+          const profileComplete = user.profile_complete || user.profileComplete || false;
+          if (profileComplete) {
+            getStarted && getStarted.addEventListener('click', () => { window.location.href = 'pages/profile-selector.html'; });
+            ctaGetStarted && ctaGetStarted.addEventListener('click', () => { window.location.href = 'pages/profile-selector.html'; });
+          } else {
+            // logged in but incomplete
+            getStarted && getStarted.addEventListener('click', () => { window.location.href = 'pages/profile-setup.htm'; });
+            ctaGetStarted && ctaGetStarted.addEventListener('click', () => { window.location.href = 'pages/profile-setup.htm'; });
+          }
+        } catch (err) {
+          // token invalid: clear and bind to signup
+          localStorage.removeItem('jwt_token');
+          getStarted && getStarted.addEventListener('click', goToSignup);
+          ctaGetStarted && ctaGetStarted.addEventListener('click', goToSignup);
+        }
+      }
+
+      decideNavigation();
+    })();
+  </script>
+</body>
+</html>

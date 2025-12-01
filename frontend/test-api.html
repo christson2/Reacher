@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeMart API Integration Tests</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      body {
+        padding: 20px;
+      }
+      .test-section {
+        margin-bottom: 40px;
+      }
+      .test-item {
+        margin: 10px 0;
+        padding: 15px;
+        background: #f9fafb;
+        border-left: 4px solid #ddd;
+        border-radius: 4px;
+      }
+      .test-item.pass {
+        border-left-color: #22c55e;
+        background: #f0fdf4;
+      }
+      .test-item.fail {
+        border-left-color: #ef4444;
+        background: #fef2f2;
+      }
+      .test-item.pending {
+        border-left-color: #f59e0b;
+        background: #fffbeb;
+      }
+      .response-box {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 5px;
+        overflow-x: auto;
+        font-family: monospace;
+        font-size: 0.85rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .btn-small {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        margin: 5px 5px 5px 0;
+      }
+      h2 {
+        color: #1f2937;
+        margin-top: 30px;
+      }
+      .summary {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 2px solid #ddd;
+      }
+      .user-data {
+        background: #f3f4f6;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+      .test-group {
+        margin-left: 0;
+      }
+      .controls {
+        margin: 20px 0;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🧪 FreeMart API Integration Tests</h1>
+      <nav>
+        <a href="pages/home.html">Home</a>
+        <a href="pages/login.html">Login</a>
+        <a href="pages/profile-selector.html">Profile Selector</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <div class="controls">
+        <h3>Test Controls</h3>
+        <button class="button" onclick="runAllTests()">🚀 Run All Tests</button>
+        <button class="button secondary" onclick="clearResults()">
+          Clear Results
+        </button>
+        <button class="button secondary" onclick="downloadResults()">
+          📥 Download Report
+        </button>
+      </div>
+
+      <div class="summary" id="summary" style="display: none">
+        <h3>Test Summary</h3>
+        <div id="summaryContent"></div>
+      </div>
+
+      <!-- Authentication Tests -->
+      <div class="test-section test-group">
+        <h2>🔐 Authentication Tests</h2>
+        <div class="test-item pending" id="test-signup">
+          <strong>Test 1.1: User Signup</strong>
+          <div
+            class="response-box"
+            id="test-signup-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-login">
+          <strong>Test 1.2: User Login</strong>
+          <div
+            class="response-box"
+            id="test-login-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-current-profile">
+          <strong>Test 1.3: Get Current Profile</strong>
+          <div
+            class="response-box"
+            id="test-current-profile-response"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Profile Management Tests -->
+      <div class="test-section test-group">
+        <h2>👤 Profile Management Tests</h2>
+        <div class="test-item pending" id="test-get-profiles">
+          <strong>Test 2.1: Get All User Profiles</strong>
+          <div
+            class="response-box"
+            id="test-get-profiles-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-switch-profile">
+          <strong>Test 2.2: Switch Profile Mode</strong>
+          <div
+            class="response-box"
+            id="test-switch-profile-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-completion-status">
+          <strong>Test 2.3: Get Profile Completion Status</strong>
+          <div
+            class="response-box"
+            id="test-completion-status-response"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Products & Services Tests -->
+      <div class="test-section test-group">
+        <h2>📦 Products & Services Tests</h2>
+        <div class="test-item pending" id="test-get-products">
+          <strong>Test 3.1: Get All Products (Seller Listings)</strong>
+          <div
+            class="response-box"
+            id="test-get-products-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-get-services">
+          <strong>Test 3.2: Get All Services (Provider Listings)</strong>
+          <div
+            class="response-box"
+            id="test-get-services-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-nearby-profiles">
+          <strong>Test 3.3: Get Nearby Profiles</strong>
+          <div
+            class="response-box"
+            id="test-nearby-profiles-response"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Data Validation Tests -->
+      <div class="test-section test-group">
+        <h2>✅ Data Validation Tests</h2>
+        <div class="test-item pending" id="test-verify-seed-data">
+          <strong>Test 4.1: Verify Seeded Users & Data</strong>
+          <div
+            class="response-box"
+            id="test-verify-seed-data-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-verify-products">
+          <strong>Test 4.2: Verify Sample Products</strong>
+          <div
+            class="response-box"
+            id="test-verify-products-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-verify-services">
+          <strong>Test 4.3: Verify Sample Services</strong>
+          <div
+            class="response-box"
+            id="test-verify-services-response"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Error Handling Tests -->
+      <div class="test-section test-group">
+        <h2>⚠️ Error Handling Tests</h2>
+        <div class="test-item pending" id="test-invalid-auth">
+          <strong>Test 5.1: Invalid Credentials Error</strong>
+          <div
+            class="response-box"
+            id="test-invalid-auth-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-missing-token">
+          <strong>Test 5.2: Missing Auth Token Error</strong>
+          <div
+            class="response-box"
+            id="test-missing-token-response"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="test-item pending" id="test-duplicate-phone">
+          <strong>Test 5.3: Duplicate Phone Number Error</strong>
+          <div
+            class="response-box"
+            id="test-duplicate-phone-response"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API_BASE = "http://localhost:4000/api";
+      let testResults = {};
+      let currentToken = null;
+      let currentUserId = null;
+
+      // Helper functions
+      function updateTest(testId, status, response, error = null) {
+        const element = document.getElementById(testId);
+        const responseBox = document.getElementById(`${testId}-response`);
+
+        element.classList.remove("pending", "pass", "fail");
+        element.classList.add(status);
+
+        testResults[testId] = { status, response, error };
+
+        if (responseBox) {
+          responseBox.style.display = "block";
+          responseBox.textContent = JSON.stringify(response || error, null, 2);
+        }
+      }
+
+      function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function makeRequest(method, endpoint, body = null, token = null) {
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        try {
+          const response = await fetch(`${API_BASE}${endpoint}`, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : null,
+          });
+          const data = await response.json();
+          return { ok: response.ok, status: response.status, data };
+        } catch (err) {
+          return { ok: false, error: err.message };
+        }
+      }
+
+      // Test Suite Functions
+      async function testSignup() {
+        const testId = "test-signup";
+        try {
+          const phone = `+254798${Math.floor(Math.random() * 1000000)
+            .toString()
+            .padStart(6, "0")}`;
+          const result = await makeRequest("POST", "/auth/signup", {
+            name: "Test User",
+            phone,
+            password: "testpassword123",
+          });
+
+          if (result.ok && result.data.token) {
+            currentToken = result.data.token;
+            currentUserId = result.data.user?.id;
+            localStorage.setItem("jwt_token", currentToken);
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testLogin() {
+        const testId = "test-login";
+        try {
+          // Use seeded user
+          const result = await makeRequest("POST", "/auth/login", {
+            phone: "+254712345001",
+            password: "password",
+          });
+
+          if (result.ok && result.data.token) {
+            currentToken = result.data.token;
+            currentUserId = result.data.user?.id;
+            localStorage.setItem("jwt_token", currentToken);
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testCurrentProfile() {
+        const testId = "test-current-profile";
+        if (!currentToken) {
+          updateTest(testId, "fail", null, "No token available");
+          return false;
+        }
+
+        try {
+          const result = await makeRequest(
+            "GET",
+            "/profiles/me/current",
+            null,
+            currentToken
+          );
+          if (result.ok) {
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testGetProfiles() {
+        const testId = "test-get-profiles";
+        if (!currentToken) {
+          updateTest(testId, "fail", null, "No token available");
+          return false;
+        }
+
+        try {
+          const result = await makeRequest(
+            "GET",
+            "/profiles/me/all",
+            null,
+            currentToken
+          );
+          if (result.ok) {
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testSwitchProfile() {
+        const testId = "test-switch-profile";
+        if (!currentToken) {
+          updateTest(testId, "fail", null, "No token available");
+          return false;
+        }
+
+        try {
+          const result = await makeRequest(
+            "POST",
+            "/profiles/switch-mode",
+            { profile_mode: "seller" },
+            currentToken
+          );
+          if (result.ok) {
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testCompletionStatus() {
+        const testId = "test-completion-status";
+        if (!currentToken) {
+          updateTest(testId, "fail", null, "No token available");
+          return false;
+        }
+
+        try {
+          const result = await makeRequest(
+            "GET",
+            "/profiles/me/completion-status",
+            null,
+            currentToken
+          );
+          if (result.ok) {
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testGetProducts() {
+        const testId = "test-get-products";
+        try {
+          const result = await makeRequest("GET", "/products");
+          if (result.ok && result.data.products) {
+            updateTest(testId, "pass", {
+              count: result.data.products.length,
+              data: result.data,
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testGetServices() {
+        const testId = "test-get-services";
+        try {
+          const result = await makeRequest("GET", "/services");
+          if (result.ok && result.data.services) {
+            updateTest(testId, "pass", {
+              count: result.data.services.length,
+              data: result.data,
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testNearbyProfiles() {
+        const testId = "test-nearby-profiles";
+        if (!currentToken) {
+          updateTest(testId, "fail", null, "No token available");
+          return false;
+        }
+
+        try {
+          const result = await makeRequest(
+            "GET",
+            "/profiles/nearby?latitude=-1.2921&longitude=36.8219&radius_km=5",
+            null,
+            currentToken
+          );
+          if (result.ok) {
+            updateTest(testId, "pass", result.data);
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testVerifySeedData() {
+        const testId = "test-verify-seed-data";
+        try {
+          // Check if users exist by trying to login with seeded credentials
+          const result = await makeRequest("POST", "/auth/login", {
+            phone: "+254712345001",
+            password: "password",
+          });
+
+          if (result.ok && result.data.user) {
+            updateTest(testId, "pass", {
+              message: "Seeded users found",
+              user: { id: result.data.user.id, name: result.data.user.name },
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testVerifyProducts() {
+        const testId = "test-verify-products";
+        try {
+          const result = await makeRequest("GET", "/products");
+          if (
+            result.ok &&
+            result.data.products &&
+            result.data.products.length >= 3
+          ) {
+            updateTest(testId, "pass", {
+              message: `Found ${result.data.products.length} products`,
+              samples: result.data.products.slice(0, 2),
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testVerifyServices() {
+        const testId = "test-verify-services";
+        try {
+          const result = await makeRequest("GET", "/services");
+          if (
+            result.ok &&
+            result.data.services &&
+            result.data.services.length >= 3
+          ) {
+            updateTest(testId, "pass", {
+              message: `Found ${result.data.services.length} services`,
+              samples: result.data.services.slice(0, 2),
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", result.data);
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testInvalidAuth() {
+        const testId = "test-invalid-auth";
+        try {
+          const result = await makeRequest("POST", "/auth/login", {
+            phone: "+999999999999",
+            password: "wrongpassword",
+          });
+
+          if (!result.ok && result.status === 401) {
+            updateTest(testId, "pass", {
+              message: "Correctly rejected invalid credentials",
+              status: result.status,
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", {
+              message: "Should have returned 401",
+              result,
+            });
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testMissingToken() {
+        const testId = "test-missing-token";
+        try {
+          const result = await makeRequest(
+            "GET",
+            "/profiles/me/current",
+            null,
+            null
+          );
+
+          if (!result.ok && result.status === 401) {
+            updateTest(testId, "pass", {
+              message: "Correctly rejected request without token",
+              status: result.status,
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", {
+              message: "Should have returned 401",
+              result,
+            });
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function testDuplicatePhone() {
+        const testId = "test-duplicate-phone";
+        try {
+          // Try to signup with existing seeded phone
+          const result = await makeRequest("POST", "/auth/signup", {
+            name: "Duplicate Test",
+            phone: "+254712345001",
+            password: "password123",
+          });
+
+          if (!result.ok && result.status === 409) {
+            updateTest(testId, "pass", {
+              message: "Correctly rejected duplicate phone",
+              status: result.status,
+            });
+            return true;
+          } else {
+            updateTest(testId, "fail", {
+              message: "Should have returned 409",
+              result,
+            });
+            return false;
+          }
+        } catch (err) {
+          updateTest(testId, "fail", null, err);
+          return false;
+        }
+      }
+
+      async function runAllTests() {
+        testResults = {};
+        document.getElementById("summary").style.display = "none";
+
+        console.log("🚀 Starting API Integration Tests...\n");
+
+        // Auth tests
+        console.log("▶ Running Authentication Tests...");
+        const signupOk = await testSignup();
+        await delay(500);
+        const loginOk = await testLogin();
+        await delay(500);
+        const profileOk = await testCurrentProfile();
+        await delay(500);
+
+        // Profile tests
+        console.log("▶ Running Profile Management Tests...");
+        const getProfilesOk = await testGetProfiles();
+        await delay(500);
+        const switchOk = await testSwitchProfile();
+        await delay(500);
+        const statusOk = await testCompletionStatus();
+        await delay(500);
+
+        // Data tests
+        console.log("▶ Running Products & Services Tests...");
+        const productsOk = await testGetProducts();
+        await delay(500);
+        const servicesOk = await testGetServices();
+        await delay(500);
+        const nearbyOk = await testNearbyProfiles();
+        await delay(500);
+
+        // Validation tests
+        console.log("▶ Running Data Validation Tests...");
+        const seedDataOk = await testVerifySeedData();
+        await delay(500);
+        const verifyProductsOk = await testVerifyProducts();
+        await delay(500);
+        const verifyServicesOk = await testVerifyServices();
+        await delay(500);
+
+        // Error tests
+        console.log("▶ Running Error Handling Tests...");
+        const invalidAuthOk = await testInvalidAuth();
+        await delay(500);
+        const missingTokenOk = await testMissingToken();
+        await delay(500);
+        const duplicateOk = await testDuplicatePhone();
+        await delay(500);
+
+        // Display summary
+        showSummary();
+      }
+
+      function showSummary() {
+        const passed = Object.values(testResults).filter(
+          (r) => r.status === "pass"
+        ).length;
+        const failed = Object.values(testResults).filter(
+          (r) => r.status === "fail"
+        ).length;
+        const total = Object.values(testResults).length;
+
+        const summary = document.getElementById("summary");
+        const content = document.getElementById("summaryContent");
+
+        const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+        content.innerHTML = `
+                <p><strong>Total Tests:</strong> ${total}</p>
+                <p><strong style="color: #22c55e;">Passed:</strong> ${passed}</p>
+                <p><strong style="color: #ef4444;">Failed:</strong> ${failed}</p>
+                <p><strong>Pass Rate:</strong> ${passRate}%</p>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
+                    ${
+                      passRate === 100
+                        ? "✅ All tests passed!"
+                        : passRate >= 80
+                        ? "⚠️ Most tests passed"
+                        : "❌ Multiple failures"
+                    }
+                </div>
+            `;
+        summary.style.display = "block";
+
+        console.log(`\n✨ Test Run Complete`);
+        console.log(`📊 Passed: ${passed}/${total} (${passRate}%)`);
+        console.log(
+          `\n${
+            passRate === 100 ? "✅ All tests passed!" : "❌ Some tests failed"
+          }`
+        );
+      }
+
+      function clearResults() {
+        testResults = {};
+        currentToken = null;
+        currentUserId = null;
+        document.querySelectorAll(".test-item").forEach((item) => {
+          item.classList.remove("pass", "fail");
+          item.classList.add("pending");
+          item.querySelector(".response-box").style.display = "none";
+        });
+        document.getElementById("summary").style.display = "none";
+      }
+
+      function downloadResults() {
+        const report = {
+          timestamp: new Date().toISOString(),
+          totalTests: Object.keys(testResults).length,
+          passed: Object.values(testResults).filter((r) => r.status === "pass")
+            .length,
+          failed: Object.values(testResults).filter((r) => r.status === "fail")
+            .length,
+          results: testResults,
+        };
+
+        const dataStr = JSON.stringify(report, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `freemart-tests-${Date.now()}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>

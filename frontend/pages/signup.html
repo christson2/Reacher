@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign Up - FreeMart</title>
+    <link rel="stylesheet" href="../public/assets/css/styles.css" />
+  </head>
+  <body>
+    <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+    <style>
+      .home-btn{position:fixed;top:16px;right:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+      .home-btn:hover{background:#f4f4f4}
+    </style>
+    <script>
+      (function(){
+        function adjustHomeBtn(){
+          var btn=document.querySelector('.home-btn'); if(!btn) return;
+          var right=16, top=16;
+          var rp=document.querySelector('.right-panel');
+          if(rp){ var w=rp.getBoundingClientRect().width||0; right=Math.max(right, Math.ceil(w+12)); }
+          var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');
+          if(h){ var r2=h.getBoundingClientRect(); top=Math.max(top, Math.ceil(r2.bottom+12)); }
+          btn.style.left='auto'; btn.style.right=right+'px'; btn.style.top=top+'px';
+        }
+        window.addEventListener('load',adjustHomeBtn);
+        window.addEventListener('resize',adjustHomeBtn);
+        setTimeout(adjustHomeBtn,120);
+      })();
+    </script>
+      (function(){function adjustHomeBtn(){var btn=document.querySelector('.home-btn');if(!btn)return;var left=16,top=16;var lp=document.querySelector('.left-panel');if(lp){var r=lp.getBoundingClientRect();left=Math.max(left,Math.ceil(r.right+12));}var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');if(h){var r2=h.getBoundingClientRect();top=Math.max(top,Math.ceil(r2.bottom+12));}btn.style.left=left+'px';btn.style.top=top+'px';}window.addEventListener('load',adjustHomeBtn);window.addEventListener('resize',adjustHomeBtn);setTimeout(adjustHomeBtn,120);})();
+    </script>
+    <header>
+      <h1>FreeMart</h1>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="signup.html">Sign Up</a>
+      </nav>
+    </header>
+    <main class="container">
+      <div class="auth-card">
+        <form class="form" enctype="multipart/form-data">
+          <h2>Create your account</h2>
+          <p class="muted-small">Join FreeMart — buy, sell and offer services nearby.</p>
+          <div class="spacer-12"></div>
+          <label for="name">Name</label>
+          <input
+            class="input"
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter your name"
+            title="Name"
+            required
+          />
+
+          <label for="phone">Phone number</label>
+          <input
+            class="input"
+            type="text"
+            id="phone"
+            name="phone"
+            placeholder="Enter your phone number"
+            title="Phone number"
+            required
+          />
+
+          <label for="password">Password</label>
+          <input
+            class="input"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Create a password"
+            title="Password"
+            required
+          />
+
+          <div class="form-row">
+            <div>
+              <label for="avatar">Profile photo (optional)</label><br />
+              <input class="input" type="file" id="avatar" name="avatar" accept="image/*" />
+            </div>
+            <div class="ml-8">
+              <img id="avatarPreview" class="avatar-preview" alt="avatar preview" src="/public/assets/img/default-avatar.svg" />
+            </div>
+          </div>
+
+          <button class="button btn primary full-width" type="submit">Create account</button>
+          <div class="form-help" aria-live="polite">
+            <!-- Placeholder for error/help text -->
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      const API_BASE = "http://localhost:4000/api";
+      function isValidPhone(p) {
+        return /^\+?[0-9\-\s]{7,15}$/.test(p);
+      }
+
+      // If already logged in, skip signup
+      if (localStorage.getItem('jwt_token')) {
+        setTimeout(() => { window.location.href = 'profile-setup.htm'; }, 300);
+      }
+
+      document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const help = document.querySelector('.form-help');
+
+        help.textContent = '';
+        if (!name) { help.textContent = 'Enter your name'; return; }
+        if (!phone || !isValidPhone(phone)) { help.textContent = 'Enter a valid phone number'; return; }
+        if (!password || password.length < 8) { help.textContent = 'Password must be at least 8 characters'; return; }
+
+        try {
+          // Use FormData to support optional avatar upload
+          const fd = new FormData();
+          fd.append('name', name);
+          fd.append('phone', phone);
+          fd.append('password', password);
+          const avatar = document.getElementById('avatar');
+          if (avatar && avatar.files && avatar.files[0]) {
+            fd.append('avatar', avatar.files[0]);
+          }
+
+          const res = await fetch(`${API_BASE}/auth/signup`, {
+            method: 'POST',
+            body: fd,
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            help.textContent = data.error || 'Signup failed';
+            return;
+          }
+
+          if (data.token) localStorage.setItem('jwt_token', data.token);
+          localStorage.setItem('current_profile_mode', 'consumer');
+          // Redirect to home after successful signup
+          window.location.href = 'home.html';
+        } catch (err) {
+          console.error(err);
+          help.textContent = 'Network error';
+        }
+      });
+
+      // Avatar preview
+      const avatarInput = document.getElementById('avatar');
+      const avatarPreview = document.getElementById('avatarPreview');
+      if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', (e) => {
+          const f = e.target.files && e.target.files[0];
+          if (!f) return;
+          const url = URL.createObjectURL(f);
+          avatarPreview.src = url;
+        });
+      }
+    </script>
+  </body>
+</html>

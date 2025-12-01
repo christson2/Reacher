@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Create Request - FreeMart</title>
+    <link rel="stylesheet" href="../public/assets/css/styles.css" />
+  </head>
+  <body>
+    <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+    <style>
+      .home-btn{position:fixed;top:16px;left:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+      .home-btn:hover{background:#f4f4f4}
+    </style>
+    <script>
+      (function(){function adjustHomeBtn(){var btn=document.querySelector('.home-btn');if(!btn)return;var left=16,top=16;var lp=document.querySelector('.left-panel');if(lp){var r=lp.getBoundingClientRect();left=Math.max(left,Math.ceil(r.right+12));}var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');if(h){var r2=h.getBoundingClientRect();top=Math.max(top,Math.ceil(r2.bottom+12));}btn.style.left=left+'px';btn.style.top=top+'px';}window.addEventListener('load',adjustHomeBtn);window.addEventListener('resize',adjustHomeBtn);setTimeout(adjustHomeBtn,120);})();
+    </script>
+    <header>
+      <h1>FreeMart</h1>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="signup.html">Sign Up</a>
+      </nav>
+    </header>
+    <main>
+      <h2>Create AI-assisted Request</h2>
+      <form>
+        <fieldset>
+          <legend>Request Details</legend>
+          <label for="description">Describe your problem</label><br />
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            placeholder="Describe your issue..."
+            title="Problem description"
+            required
+          ></textarea
+          ><br />
+          <label for="media">Attach photos/videos</label><br />
+          <input
+            type="file"
+            id="media"
+            name="media"
+            multiple
+            title="Attach media files"
+          /><br />
+        </fieldset>
+        <button type="submit">Analyze & Draft</button>
+        <div class="form-help" aria-live="polite">
+          <!-- Placeholder for error/help text -->
+        </div>
+      </form>
+      </main>
+
+      <script>
+        const API_BASE = 'http://localhost:4000/api';
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const description = document.getElementById('description').value.trim();
+          const help = document.querySelector('.form-help');
+          help.textContent = '';
+          if (!description) { help.textContent = 'Please describe your problem'; return; }
+
+          const token = localStorage.getItem('jwt_token');
+          try {
+            // Send as multipart/form-data to support file uploads
+            const fd = new FormData();
+            fd.append('title', description.slice(0, 80));
+            fd.append('description', description);
+            const files = document.getElementById('media').files;
+            for (let i = 0; i < files.length; i++) fd.append('media', files[i]);
+
+            const headers = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const res = await fetch(`${API_BASE}/requests`, {
+              method: 'POST',
+              headers,
+              body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              help.textContent = data.error || 'Failed to create request';
+              return;
+            }
+            help.textContent = 'Request created — opening draft...';
+            // Optionally redirect to request detail page
+            if (data.request && data.request.id) {
+              window.location.href = `request_detail.html?id=${data.request.id}`;
+            }
+          } catch (err) {
+            console.error(err);
+            help.textContent = 'Network error';
+          }
+        });
+      </script>
+    </main>
+  </body>
+</html>

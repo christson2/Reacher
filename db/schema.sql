@@ -1,0 +1,14 @@
+-- Database schema placeholder for FreeMart
+-- Add CREATE TABLE statements here for: users, roles, profiles, products, services,
+-- requests, bids, videos, reviews, locations, notifications, sessions
+
+-- Example users table (expand as needed)
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) UNIQUE NOT NULL,
+  password_hash VARCHAR(255),
+  role VARCHAR(50) DEFAULT 'consumer',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

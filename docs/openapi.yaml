@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: FreeMart API
+  version: 0.1.0
+paths:
+  /api/auth/signup:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201': { description: Created }
+
+  /api/auth/login:
+    post:
+      summary: Login
+      responses:
+        '200': { description: OK }
+
+  /api/users/{id}:
+    get:
+      summary: Get user by id
+    put:
+      summary: Update user
+    delete:
+      summary: Soft delete user
+
+  /api/profiles:
+    get:
+      summary: List profiles
+    post:
+      summary: Create profile
+
+  /api/products:
+    get:
+      summary: Search/list products
+    post:
+      summary: Create product
+
+  /api/services:
+    get:
+      summary: Search/list services (nearby)
+    post:
+      summary: Create service
+
+  /api/requests:
+    get:
+      summary: List nearby requests
+    post:
+      summary: Create request
+
+  /api/bids:
+    post:
+      summary: Submit bid
+
+  /api/videos:
+    get:
+      summary: List videos
+    post:
+      summary: Upload video (multipart/form-data)
+
+  /api/reviews:
+    post:
+      summary: Add review
+
+components: {}
+openapi: 3.0.3
+info:
+  title: FreeMart API
+  version: '0.1.0'
+paths:
+  /api/ping:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK

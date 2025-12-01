@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FreeMart — Home</title>
+  <link rel="stylesheet" href="../public/assets/css/home.css" />
+   <script>
+  // replace host:port with your backend address if different
+  window.__API_BASE__ = "http://localhost:4000/api";
+  </script>
+</head>
+  <body>
+    <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+    <style>
+      .home-btn{position:fixed;top:12px;left:12px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+      .home-btn:hover{background:#f4f4f4}
+    </style>
+  <div id="app" class="app">
+
+    <!-- LEFT PANEL (Account switcher + Nav) -->
+    <aside class="left-panel" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-name">FreeMart</div>
+        <div class="brand-tag">Local products · services · jobs</div>
+      </div>
+
+      <nav class="left-nav" aria-label="User navigation">
+        <button class="nav-btn" id="messagesBtn" aria-label="Messages">💬 Messages</button>
+        <button class="nav-btn" id="favesBtn" aria-label="Favourites">⭐ Favourites</button>
+        <button class="nav-btn" id="contactsBtn" aria-label="Contacts">👥 Contacts</button>
+        <button class="nav-btn" id="settingsBtn" aria-label="Settings">⚙️ Settings</button>
+      </nav>
+
+      <div class="account-switcher" role="tablist" aria-label="Switch account role">
+        <div class="switcher-title">Switch role</div>
+        <button class="role-switch active" data-role="consumer" role="tab" aria-selected="true">Consumer</button>
+        <button class="role-switch" data-role="seller" role="tab" aria-selected="false">Seller</button>
+        <button class="role-switch" data-role="provider" role="tab" aria-selected="false">Provider</button>
+      </div>
+
+      <div class="left-footer">
+        <button id="profileSettings" class="btn small">Profile settings</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main" role="main">
+      <!-- Topbar with quick actions -->
+      <header class="topbar" role="banner">
+        <div class="topbar-left">
+          <div class="welcome">Welcome back</div>
+          <div class="small-note">Find local products, services & jobs</div>
+        </div>
+        <div class="topbar-right">
+          <button id="notificationsBtn" class="icon-btn" aria-label="Notifications">🔔</button>
+          <button id="profileBtn" class="icon-btn" aria-label="Profile">👤</button>
+        </div>
+      </header>
+
+      <!-- Search area (buttons + dynamic input) -->
+      <section class="search-area" aria-labelledby="searchHeading">
+        <h2 id="searchHeading" class="visually-hidden">Search</h2>
+
+        <div class="search-options" role="tablist" aria-label="Search type">
+          <button class="search-option active" data-type="product" type="button" role="tab" aria-selected="true">Products</button>
+          <button class="search-option" data-type="service" type="button" role="tab" aria-selected="false">Service Providers</button>
+          <button class="search-option" data-type="job" type="button" role="tab" aria-selected="false">Jobs</button>
+          <button class="search-option" data-type="person" type="button" role="tab" aria-selected="false">Find Person</button>
+        </div>
+
+        <form id="searchForm" class="search-form" role="search" aria-label="Search form">
+          <label for="searchInput" class="sr-only">Search</label>
+          <input id="searchInput" class="input" name="q" type="search" placeholder="Enter product name" aria-label="Search input" />
+          <button id="searchBtn" class="btn primary" type="submit">Search</button>
+          <button id="clearBtn" class="btn link" type="button">Clear</button>
+        </form>
+      </section>
+
+      <!-- Feed of saved contacts (initial) -->
+      <section id="feedSection" class="feed-section" aria-live="polite">
+        <h3 class="section-title">From your contacts</h3>
+        <div id="feedList" class="feed-list">
+          <!-- posts injected here -->
+        </div>
+      </section>
+
+      <!-- Search results (empty until search) -->
+      <section id="resultsSection" class="results-section" aria-live="polite" hidden>
+        <h3 class="section-title">Search results</h3>
+        <div id="resultsList" class="results-list">
+          <!-- results injected here -->
+        </div>
+      </section>
+
+      <!-- Promotional posts (appear under results) -->
+      <section id="promoSection" class="promo-section" aria-live="polite" hidden>
+        <h3 class="section-title">Promotional posts</h3>
+        <div id="promoList" class="promo-list">
+          <!-- promos injected here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../public/assets/js/home.js" defer></script>
+</body>
+</html>

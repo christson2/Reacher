@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Consumer Dashboard - FreeMart</title>
+  <link rel="stylesheet" href="../public/assets/css/styles.css">
+</head>
+<body>
+  <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+  <style>
+    .home-btn{position:fixed;top:16px;right:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+    .home-btn:hover{background:#f4f4f4}
+  </style>
+  <script>
+    (function(){
+      function adjustHomeBtn(){
+        var btn=document.querySelector('.home-btn'); if(!btn) return;
+        var right=16, top=16;
+        var rp=document.querySelector('.right-panel');
+        if(rp){ var w=rp.getBoundingClientRect().width||0; right=Math.max(right, Math.ceil(w+12)); }
+        var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');
+        if(h){ var r2=h.getBoundingClientRect(); top=Math.max(top, Math.ceil(r2.bottom+12)); }
+        btn.style.left='auto'; btn.style.right=right+'px'; btn.style.top=top+'px';
+      }
+      window.addEventListener('load',adjustHomeBtn);
+      window.addEventListener('resize',adjustHomeBtn);
+      setTimeout(adjustHomeBtn,120);
+    })();
+  </script>
+  <h2>Consumer Dashboard (placeholder)</h2>
+</body>
+</html>

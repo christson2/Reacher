@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeMart - Select Your Profile</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 1000px;
+        width: 100%;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .content {
+        padding: 40px 20px;
+      }
+
+      .profiles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+      }
+
+      .profile-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .profile-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+        transform: translateY(-5px);
+      }
+
+      .profile-card.active {
+        border-color: #667eea;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+      }
+
+      .profile-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+      }
+
+      .profile-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .profile-card p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #f0f0f0;
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+      }
+
+      .badge.active {
+        background: #667eea;
+        color: white;
+      }
+
+      .features {
+        text-align: left;
+        margin-top: 20px;
+        font-size: 0.9rem;
+      }
+
+      .features li {
+        margin-bottom: 8px;
+        color: #666;
+        list-style-position: inside;
+      }
+
+      .btn-select {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 15px;
+        transition: background 0.3s ease;
+        width: 100%;
+      }
+
+      .btn-select:hover {
+        background: #5568d3;
+      }
+
+      .profile-card.active .btn-select {
+        background: #40c057;
+      }
+
+      .profile-card.active .btn-select:hover {
+        background: #37b24d;
+      }
+
+      .current-profile {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .current-profile label {
+        font-weight: bold;
+        color: #333;
+        margin-right: 10px;
+      }
+
+      .current-profile span {
+        background: #667eea;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .profiles-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .profile-icon {
+          font-size: 3rem;
+        }
+      }
+
+      .setup-prompt {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        color: #856404;
+        display: none;
+      }
+
+      .setup-prompt.show {
+        display: block;
+      }
+
+      .setup-btn {
+        background: #ffc107;
+        color: #333;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+
+      .setup-btn:hover {
+        background: #e0a800;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+    <style>
+      .home-btn{position:fixed;top:16px;left:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+      .home-btn:hover{background:#f4f4f4}
+    </style>
+    <script>
+      (function(){
+        function adjustHomeBtn(){
+          var btn = document.querySelector('.home-btn'); if(!btn) return;
+          var left = 16; var top = 16;
+          var leftPanel = document.querySelector('.left-panel');
+          if(leftPanel){ var r = leftPanel.getBoundingClientRect(); left = Math.max(left, Math.ceil(r.right + 12)); }
+          var header = document.querySelector('header') || document.querySelector('.topbar') || document.querySelector('.header');
+          if(header){ var r2 = header.getBoundingClientRect(); top = Math.max(top, Math.ceil(r2.bottom + 12)); }
+          btn.style.left = left + 'px'; btn.style.top = top + 'px';
+        }
+        window.addEventListener('load', adjustHomeBtn); window.addEventListener('resize', adjustHomeBtn); setTimeout(adjustHomeBtn,120);
+      })();
+    </script>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Welcome to FreeMart</h1>
+        <p>Choose your profile to get started</p>
+      </div>
+
+      <div class="content">
+        <div class="current-profile">
+          <label>Current Profile Mode:</label>
+          <span id="currentMode">Consumer</span>
+          <button class="setup-btn" onclick="viewProfileCompletion()">
+            View Profile Setup Status
+          </button>
+        </div>
+
+        <div class="profiles-grid">
+          <!-- Consumer Profile -->
+          <div class="profile-card" id="consumerCard">
+            <div class="badge active">Active</div>
+            <div class="profile-icon">🛍️</div>
+            <h3>Consumer</h3>
+            <p>Search and discover products and services near you</p>
+            <ul class="features">
+              <li>Search nearby products</li>
+              <li>Find service providers</li>
+              <li>Post AI-assisted requests</li>
+              <li>Track request history</li>
+              <li>Chat with sellers & providers</li>
+            </ul>
+              <button class="btn-select" onclick="selectProfile('consumer')">
+                Select Consumer
+              </button>
+          </div>
+
+          <!-- Seller Profile -->
+          <div class="profile-card" id="sellerCard">
+            <div class="badge" id="sellerBadge">Not Active</div>
+            <div class="profile-icon">🏪</div>
+            <h3>Seller</h3>
+            <p>Manage your business and sell products</p>
+            <ul class="features">
+              <li>Create product listings</li>
+              <li>Upload promotional videos</li>
+              <li>Respond to bid requests</li>
+              <li>Manage inquiries</li>
+              <li>Track sales insights</li>
+            </ul>
+            <button class="btn-select" onclick="selectProfile('seller')">
+              Select Seller
+            </button>
+            <div class="setup-prompt" id="sellerSetupPrompt">
+              <p>⚠️ Seller profile not yet configured.</p>
+              <button class="setup-btn" onclick="setupSeller()">
+                Complete Setup Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Service Provider Profile -->
+          <div class="profile-card" id="providerCard">
+            <div class="badge" id="providerBadge">Not Active</div>
+            <div class="profile-icon">💼</div>
+            <h3>Service Provider</h3>
+            <p>Offer your professional services</p>
+            <ul class="features">
+              <li>Showcase your portfolio</li>
+              <li>Upload service videos</li>
+              <li>Respond to nearby requests</li>
+              <li>Manage appointments</li>
+              <li>Build your reputation</li>
+            </ul>
+            <button class="btn-select" onclick="selectProfile('provider')">
+              Select Provider
+            </button>
+            <div class="setup-prompt" id="providerSetupPrompt">
+              <p>⚠️ Provider profile not yet configured.</p>
+              <button class="setup-btn" onclick="setupProvider()">
+                Complete Setup Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup Modal for Seller -->
+    <div
+      id="sellerSetupModal"
+      style="
+        .home-btn{position:fixed;top:16px;right:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+        .home-btn:hover{background:#f4f4f4}
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+            var right=16,top=16;var rp=document.querySelector('.right-panel');if(rp){var w=rp.getBoundingClientRect().width||0;right=Math.max(right,Math.ceil(w+12));}var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');if(h){var r2=h.getBoundingClientRect();top=Math.max(top,Math.ceil(r2.bottom+12));}btn.style.left='auto';btn.style.right=right+'px';btn.style.top=top+'px';}window.addEventListener('load',adjustHomeBtn);window.addEventListener('resize',adjustHomeBtn);setTimeout(adjustHomeBtn,120);})();
+        flex-align: center;
+      "
+    >
+      <div
+        style="
+          background: white;
+          margin: 50px auto;
+          padding: 40px;
+          border-radius: 15px;
+          max-width: 500px;
+          width: 90%;
+        "
+      >
+        <h2>Setup Your Seller Profile</h2>
+        <form id="sellerForm">
+          <div style="margin-bottom: 20px">
+            <label for="businessName">Business Name *</label>
+            <input
+              type="text"
+              id="businessName"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+              "
+            />
+          </div>
+          <div style="margin-bottom: 20px">
+            <label for="businessCategory">Business Category *</label>
+            <select
+              id="businessCategory"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+              "
+            >
+              <option value="">Select Category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Food">Food & Beverages</option>
+              <option value="Home">Home & Living</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 20px">
+            <label for="businessBio">Business Description</label>
+            <textarea
+              id="businessBio"
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                height: 100px;
+              "
+            ></textarea>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <button type="submit" class="btn-select" style="flex: 1; margin: 0">
+              Complete Setup
+            </button>
+            <button
+              type="button"
+              onclick="closeSellerSetup()"
+              style="
+                flex: 1;
+                background: #ddd;
+                color: #333;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Setup Modal for Service Provider -->
+    <div
+      id="providerSetupModal"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      "
+    >
+      <div
+        style="
+          background: white;
+          margin: 50px auto;
+          padding: 40px;
+          border-radius: 15px;
+          max-width: 500px;
+          width: 90%;
+        "
+      >
+        <h2>Setup Your Service Provider Profile</h2>
+        <form id="providerForm">
+          <div style="margin-bottom: 20px">
+            <label for="serviceName">Service Name *</label>
+            <input
+              type="text"
+              id="serviceName"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+              "
+            />
+          </div>
+          <div style="margin-bottom: 20px">
+            <label for="professionCategory">Profession/Category *</label>
+            <select
+              id="professionCategory"
+              required
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+              "
+            >
+              <option value="">Select Category</option>
+              <option value="Plumbing">Plumbing</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Carpentry">Carpentry</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Tutoring">Tutoring</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 20px">
+            <label for="experienceYears">Years of Experience</label>
+            <input
+              type="number"
+              id="experienceYears"
+              min="0"
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+              "
+            />
+          </div>
+          <div style="margin-bottom: 20px">
+            <label for="providerBio">About Your Service</label>
+            <textarea
+              id="providerBio"
+              style="
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                height: 100px;
+              "
+            ></textarea>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <button type="submit" class="btn-select" style="flex: 1; margin: 0">
+              Complete Setup
+            </button>
+            <button
+              type="button"
+              onclick="closeProviderSetup()"
+              style="
+                flex: 1;
+                background: #ddd;
+                color: #333;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:4000/api";
+      let userProfiles = {};
+      let currentUser = null;
+
+      // Initialize page
+      async function initializePage() {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        await loadUserProfiles();
+        loadProfileStatus();
+      }
+
+      // Load all user profiles
+      async function loadUserProfiles() {
+        const token = localStorage.getItem("jwt_token");
+        try {
+          const response = await fetch(`${API_BASE}/profiles/me/all`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await response.json();
+          userProfiles = data;
+          updateProfileDisplay();
+        } catch (err) {
+          console.error("Error loading profiles:", err);
+        }
+      }
+
+      // Update profile display based on status
+      function updateProfileDisplay() {
+        const status = userProfiles.profile_status || {};
+
+        // Update badges and cards
+        if (status.seller) {
+          document.getElementById("sellerBadge").textContent = "Active";
+          document.getElementById("sellerBadge").classList.add("active");
+          document.getElementById("sellerCard").classList.add("active");
+          document.getElementById("sellerSetupPrompt").classList.remove("show");
+        } else {
+          document.getElementById("sellerSetupPrompt").classList.add("show");
+        }
+
+        if (status.provider) {
+          document.getElementById("providerBadge").textContent = "Active";
+          document.getElementById("providerBadge").classList.add("active");
+          document.getElementById("providerCard").classList.add("active");
+          document
+            .getElementById("providerSetupPrompt")
+            .classList.remove("show");
+        } else {
+          document.getElementById("providerSetupPrompt").classList.add("show");
+        }
+
+        // Update current mode display
+        const mode = userProfiles.current_mode || "consumer";
+        document.getElementById("currentMode").textContent =
+          mode.charAt(0).toUpperCase() + mode.slice(1);
+      }
+
+      // Load profile completion status
+      async function loadProfileStatus() {
+        const token = localStorage.getItem("jwt_token");
+        try {
+          const response = await fetch(
+            `${API_BASE}/profiles/me/completion-status`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          const data = await response.json();
+          console.log("Profile completion status:", data);
+        } catch (err) {
+          console.error("Error loading profile status:", err);
+        }
+      }
+
+      // Switch profile mode
+      async function switchProfile(mode) {
+        const token = localStorage.getItem("jwt_token");
+        try {
+          const response = await fetch(`${API_BASE}/profiles/switch-mode`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profile_mode: mode }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Set current mode locally and redirect to home to show the selected profile
+            localStorage.setItem("current_profile_mode", mode);
+            document.getElementById("currentMode").textContent =
+              mode.charAt(0).toUpperCase() + mode.slice(1);
+            loadUserProfiles();
+            // Redirect user to the home page where they can see/switch profiles
+            window.location.href = 'home.html';
+          } else {
+            const error = await response.json();
+            alert("Error: " + error.error);
+          }
+        } catch (err) {
+          console.error("Error switching profile:", err);
+        }
+      }
+
+      // Immediate select and redirect: update local state and go to role-specific dashboard
+      function selectProfile(mode) {
+        try {
+          localStorage.setItem('current_profile_mode', mode);
+          document.getElementById('currentMode').textContent =
+            mode.charAt(0).toUpperCase() + mode.slice(1);
+
+          // Fire-and-forget API sync so UX is immediate
+          const token = localStorage.getItem('jwt_token');
+          if (token) {
+            fetch(`${API_BASE}/profiles/switch-mode`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ profile_mode: mode }),
+            }).catch((e) => console.debug('Profile switch sync failed', e));
+          }
+
+          // Redirect to the role-specific dashboard
+          const dashboardMap = {
+            consumer: 'consumer-dashboard.html',
+            seller: 'seller-dashboard.html',
+            provider: 'provider-dashboard.html'
+          };
+          const dashboard = dashboardMap[mode] || 'home.html';
+          window.location.href = dashboard;
+        } catch (ex) {
+          console.error('selectProfile error', ex);
+          window.location.href = 'home.html';
+        }
+      }
+
+      // Redirect to appropriate dashboard
+      function redirectToDashboard(mode) {
+        const dashboards = {
+          consumer: "consumer-dashboard.html",
+          seller: "seller-dashboard.html",
+          provider: "provider-dashboard.html",
+        };
+        setTimeout(() => {
+          window.location.href = dashboards[mode] || "index.html";
+        }, 1000);
+      }
+
+      // Setup seller profile
+      function setupSeller() {
+        document.getElementById("sellerSetupModal").style.display = "flex";
+      }
+
+      function closeSellerSetup() {
+        document.getElementById("sellerSetupModal").style.display = "none";
+      }
+
+      // Handle seller form submission
+      document
+        .getElementById("sellerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const token = localStorage.getItem("jwt_token");
+          const data = {
+            business_name: document.getElementById("businessName").value,
+            business_category:
+              document.getElementById("businessCategory").value,
+            bio: document.getElementById("businessBio").value,
+          };
+
+          try {
+            const response = await fetch(
+              `${API_BASE}/profiles/seller/initialize`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              }
+            );
+
+            if (response.ok) {
+              alert("Seller profile setup completed!");
+              closeSellerSetup();
+              loadUserProfiles();
+            } else {
+              const error = await response.json();
+              alert("Error: " + error.error);
+            }
+          } catch (err) {
+            console.error("Error setting up seller profile:", err);
+          }
+        });
+
+      // Setup provider profile
+      function setupProvider() {
+        document.getElementById("providerSetupModal").style.display = "flex";
+      }
+
+      function closeProviderSetup() {
+        document.getElementById("providerSetupModal").style.display = "none";
+      }
+
+      // Handle provider form submission
+      document
+        .getElementById("providerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const token = localStorage.getItem("jwt_token");
+          const data = {
+            service_name: document.getElementById("serviceName").value,
+            profession_category:
+              document.getElementById("professionCategory").value,
+            experience_years: document.getElementById("experienceYears").value,
+            bio: document.getElementById("providerBio").value,
+          };
+
+          try {
+            const response = await fetch(
+              `${API_BASE}/profiles/provider/initialize`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+              }
+            );
+
+            if (response.ok) {
+              alert("Provider profile setup completed!");
+              closeProviderSetup();
+              loadUserProfiles();
+            } else {
+              const error = await response.json();
+              alert("Error: " + error.error);
+            }
+          } catch (err) {
+            console.error("Error setting up provider profile:", err);
+          }
+        });
+
+      // View profile completion
+      function viewProfileCompletion() {
+        alert(
+          "Profile completion status:\n" +
+            JSON.stringify(userProfiles.profile_status, null, 2)
+        );
+      }
+
+      // Initialize on page load
+      initializePage();
+    </script>
+  </body>
+</html>

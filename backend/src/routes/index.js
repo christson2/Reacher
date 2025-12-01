@@ -1,0 +1,40 @@
+const express = require('express');
+const router = express.Router();
+
+const auth = require('./auth');
+const users = require('./users');
+const profiles = require('./profiles');
+const products = require('./products');
+const services = require('./services');
+const requests = require('./requests');
+const bids = require('./bids');
+const videos = require('./videos');
+const reviews = require('./reviews');
+const appointments = require('./appointments');
+const posts = require('./posts');
+const contacts = require('./contacts');
+const jobs = require('./jobs');
+const messages = require('./messages');
+const favourites = require('./favourites');
+const accountSwitchLog = require('./accountSwitchLog');
+const searchLogs = require('./searchLogs');
+
+router.use('/auth', auth);
+router.use('/users', users);
+router.use('/profiles', profiles);
+router.use('/products', products);
+router.use('/services', services);
+router.use('/requests', requests);
+router.use('/bids', bids);
+router.use('/videos', videos);
+router.use('/reviews', reviews);
+router.use('/appointments', appointments);
+router.use('/posts', posts);
+router.use('/contacts', contacts);
+router.use('/jobs', jobs);
+router.use('/messages', messages);
+router.use('/favourites', favourites);
+router.use('/account-switch-log', accountSwitchLog);
+router.use('/search-logs', searchLogs);
+
+module.exports = router;

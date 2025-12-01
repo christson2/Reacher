@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeMart - Complete Your Profile Setup</title>
+    <link rel="stylesheet" href="../public/assets/css/styles.css" />
+    <style>
+      /* keep styles minimal and consistent with existing selector */
+      .container { max-width: 1000px; margin: 40px auto; }
+      .header { padding: 20px 0; }
+      .profiles-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 20px; }
+      .profile-card { border:1px solid #e6e6e6; padding:20px; border-radius:10px; text-align:center; }
+      .profile-card h3 { margin:10px 0; }
+      .profile-card p { color:#666; font-size:0.95rem }
+      .card-btn { background:#0a6ebd; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; width:100%; }
+      .card-btn:hover { background:#065a9a }
+      .continue-later { margin-top:18px; display:block; text-align:center; color:#0a6ebd; cursor:pointer; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>Complete your profile setup</h1>
+        <p>Select a profile to finish setup — you can do this later if you prefer.</p>
+      </header>
+
+      <section class="profiles-grid">
+        <article class="profile-card" id="card-consumer">
+          <div class="profile-icon">🛍️</div>
+          <h3>Consumer</h3>
+          <p>Get personalized recommendations and access to marketplaces.</p>
+          <button class="card-btn" data-profile="consumer">Complete Profile setup</button>
+        </article>
+
+        <article class="profile-card" id="card-seller">
+          <div class="profile-icon">🏪</div>
+          <h3>Seller</h3>
+          <p>Create product listings and manage your sales.</p>
+          <button class="card-btn" data-profile="seller">Complete Profile setup</button>
+        </article>
+
+        <article class="profile-card" id="card-provider">
+          <div class="profile-icon">💼</div>
+          <h3>Service Provider</h3>
+          <p>Offer services, manage appointments and build your reputation.</p>
+          <button class="card-btn" data-profile="provider">Complete Profile setup</button>
+        </article>
+      </section>
+
+      <div style="text-align:center; margin-top:18px;">
+        <a id="continueLater" class="continue-later">Continue Profile setup later</a>
+      </div>
+    </main>
+
+    <script>
+      // When user clicks Complete Profile setup, go to profile-setup-form with profile query
+      document.querySelectorAll('.card-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const p = e.currentTarget.getAttribute('data-profile');
+          // save chosen profile temporarily
+          localStorage.setItem('selected_profile_to_setup', p);
+          window.location.href = `profile-setup-form.html?profile=${p}`;
+        });
+      });
+
+      document.getElementById('continueLater').addEventListener('click', () => {
+        // keep default mode and go to home
+        const chosen = localStorage.getItem('current_profile_mode') || 'consumer';
+        window.location.href = 'home.html';
+      });
+
+      // If not logged in, redirect to login
+      (function ensureAuth(){
+        if (!localStorage.getItem('jwt_token')) {
+          // if user just signed up they should have token, otherwise go to login
+          window.location.href = 'login.html';
+        }
+      })();
+    </script>
+  </body>
+</html>

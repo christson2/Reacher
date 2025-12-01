@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Complete Profile</title>
+    <link rel="stylesheet" href="../public/assets/css/styles.css" />
+    <style>
+      .container { max-width:600px; margin:40px auto; padding:20px; }
+      .field { margin-bottom:12px }
+      label { display:block; margin-bottom:6px }
+      input, select, textarea { width:100%; padding:10px; border-radius:6px; border:1px solid #ddd }
+      .actions { display:flex; gap:10px; margin-top:14px }
+      .btn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer }
+      .btn-primary { background:#0a6ebd; color:#fff }
+      .btn-secondary { background:#eee }
+    </style>
+  </head>
+  <body>
+    <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
+    <style>
+      .home-btn{position:fixed;top:16px;left:16px;z-index:9999;background:#fff;border-radius:8px;padding:8px 10px;color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-weight:600}
+      .home-btn:hover{background:#f4f4f4}
+    </style>
+    <script>
+      (function(){function adjustHomeBtn(){var btn=document.querySelector('.home-btn');if(!btn)return;var left=16,top=16;var lp=document.querySelector('.left-panel');if(lp){var r=lp.getBoundingClientRect();left=Math.max(left,Math.ceil(r.right+12));}var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');if(h){var r2=h.getBoundingClientRect();top=Math.max(top,Math.ceil(r2.bottom+12));}btn.style.left=left+'px';btn.style.top=top+'px';}window.addEventListener('load',adjustHomeBtn);window.addEventListener('resize',adjustHomeBtn);setTimeout(adjustHomeBtn,120);})();
+    </script>
+    <main class="container">
+      <h2 id="title">Complete Profile</h2>
+      <form id="setupForm">
+        <div id="fields"></div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="skipBtn" class="btn btn-secondary">Skip</button>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const profile = params.get('profile') || localStorage.getItem('selected_profile_to_setup') || 'consumer';
+      document.getElementById('title').textContent = `Complete ${profile.charAt(0).toUpperCase()+profile.slice(1)} Profile`;
+
+      const fieldsDiv = document.getElementById('fields');
+      function addField(id, label, tag='input', attrs={}){
+        const wrap = document.createElement('div'); wrap.className='field';
+        const l = document.createElement('label'); l.htmlFor=id; l.textContent=label; wrap.appendChild(l);
+        let el;
+        if(tag==='textarea') el=document.createElement('textarea'); else el=document.createElement('input');
+        el.id=id; el.name=id;
+        Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+        wrap.appendChild(el); fieldsDiv.appendChild(wrap);
+      }
+
+      if(profile==='seller'){
+        addField('businessName','Business Name','input',{required:'',placeholder:'Your business name'});
+        addField('businessCategory','Business Category','input',{placeholder:'e.g. Electronics'});
+        addField('businessBio','Business Description','textarea',{placeholder:'Tell customers about your business'});
+      } else if(profile==='provider'){
+        addField('serviceName','Service Name','input',{required:'',placeholder:'Name of your service'});
+        addField('professionCategory','Profession/Category','input',{placeholder:'e.g. Plumbing'});
+        addField('experienceYears','Years of Experience','input',{type:'number',min:'0'});
+        addField('providerBio','About Your Service','textarea',{placeholder:'Describe your service'});
+      } else {
+        // consumer minimal
+        addField('displayName','Display Name','input',{placeholder:'How you would like to be known'});
+        addField('preferences','Preferences','textarea',{placeholder:'Optional preferences'});
+      }
+
+      // On save: try calling API to save profile details; regardless, set current_profile_mode and go to home.html
+      document.getElementById('setupForm').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const token = localStorage.getItem('jwt_token');
+        const payload = {};
+        new FormData(e.target).forEach((v,k)=>payload[k]=v);
+        try{
+          if(token){
+            // Try to call profile initialize endpoints similar to existing implementation
+            let url='';
+            if(profile==='seller') url='/api/profiles/seller/initialize';
+            else if(profile==='provider') url='/api/profiles/provider/initialize';
+            else url='/api/profiles/consumer/initialize';
+
+            const res = await fetch(url, {
+              method:'POST',
+              headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            });
+            // ignore response errors for now
+          }
+        }catch(ex){ console.error('Profile save failed',ex); }
+        // mark profile as current mode
+        localStorage.setItem('current_profile_mode', profile);
+        window.location.href='home.html';
+      });
+
+      // Skip: go home and keep current mode
+      document.getElementById('skipBtn').addEventListener('click', ()=>{
+        window.location.href='home.html';
+      });
+    </script>
+  </body>
+</html>
