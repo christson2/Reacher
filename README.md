@@ -1,4 +1,4 @@
-# FreeMart
+# Reacher
 
 FreeMart is a **local-first marketplace platform** connecting consumers with nearby product sellers and service providers. Users can search for products/services by location, post AI-assisted requests, receive bids, and manage transactions—all with a single unified account that supports three switchable modes (Consumer, Seller, Service Provider).
 
