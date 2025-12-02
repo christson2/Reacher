@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Login - FreeMart</title>
     <link rel="stylesheet" href="../public/assets/css/home.css" />
+    <style>
+      /* Small local UI enhancements for login page */
+      .auth-card{max-width:420px;margin:36px auto;padding:22px;border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,0.06);}
+      .logo{width:72px;height:72px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:#f6f9ff;border-radius:10px;font-weight:700;font-size:28px;color:#0b74de}
+      .form-help{color:#b91c1c;margin-top:10px;min-height:20px}
+      .form-row{display:flex;align-items:center;justify-content:space-between}
+      .remember{display:flex;align-items:center;gap:8px;font-size:14px}
+      .button.primary{background:#0b74de;border:none;color:#fff}
+      .button.primary:hover{filter:brightness(0.98);transform:translateY(-1px)}
+      .show-pass{cursor:pointer;font-size:13px;color:#555;margin-left:8px}
+      @media (max-width:480px){.auth-card{margin:20px;padding:16px}}
+    </style>
   </head>
   <body>
     <a href="home.html" class="home-btn" aria-label="Home">🏠 Home</a>
@@ -29,7 +41,7 @@
       })();
     </script>
     <header>
-      <h1>FreeMart</h1>
+      <h1>Reacher</h1>
       <nav>
         <a href="home.html">Home</a>
         <a href="login.html">Login</a>
@@ -39,6 +51,7 @@
     <main class="container">
       <div class="auth-card">
         <form class="form">
+          <div class="logo" aria-hidden="true">R</div>
           <h2>Welcome back</h2>
           <p class="muted-small">Sign in to access your FreeMart account</p>
           <div class="spacer-12"></div>
@@ -63,6 +76,10 @@
             title="Password"
             required
           />
+          <div class="form-row" style="margin-top:8px">
+            <label class="remember"><input type="checkbox" id="remember"> Remember me</label>
+            <a href="forgot-password.html" class="btn link">Forgot?</a>
+          </div>
 
           <button class="button btn primary full-width" type="submit">Login</button>
           <div class="form-help" aria-live="polite">
@@ -124,6 +141,16 @@
           help.textContent = 'Network error';
         }
       });
+
+      // Show/hide password toggle (click on password field to toggle with Ctrl+P or add future UI)
+      (function(){
+        const pwd = document.getElementById('password');
+        // double-click password to toggle as a small keyboard-friendly shortcut
+        if (!pwd) return;
+        pwd.addEventListener('dblclick', () => {
+          pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        });
+      })();
     </script>
   </body>
 </html>

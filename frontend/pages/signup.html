@@ -19,19 +19,20 @@
           var right=16, top=16;
           var rp=document.querySelector('.right-panel');
           if(rp){ var w=rp.getBoundingClientRect().width||0; right=Math.max(right, Math.ceil(w+12)); }
+          var lp=document.querySelector('.left-panel');
+          if(lp){ var r=lp.getBoundingClientRect(); btn.style.left = Math.max(16, Math.ceil(r.right+12)) + 'px'; btn.style.right = 'auto'; }
           var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');
           if(h){ var r2=h.getBoundingClientRect(); top=Math.max(top, Math.ceil(r2.bottom+12)); }
-          btn.style.left='auto'; btn.style.right=right+'px'; btn.style.top=top+'px';
+          if (!lp) { btn.style.left='auto'; btn.style.right=right+'px'; }
+          btn.style.top=top+'px';
         }
         window.addEventListener('load',adjustHomeBtn);
         window.addEventListener('resize',adjustHomeBtn);
         setTimeout(adjustHomeBtn,120);
       })();
     </script>
-      (function(){function adjustHomeBtn(){var btn=document.querySelector('.home-btn');if(!btn)return;var left=16,top=16;var lp=document.querySelector('.left-panel');if(lp){var r=lp.getBoundingClientRect();left=Math.max(left,Math.ceil(r.right+12));}var h=document.querySelector('header')||document.querySelector('.topbar')||document.querySelector('.header');if(h){var r2=h.getBoundingClientRect();top=Math.max(top,Math.ceil(r2.bottom+12));}btn.style.left=left+'px';btn.style.top=top+'px';}window.addEventListener('load',adjustHomeBtn);window.addEventListener('resize',adjustHomeBtn);setTimeout(adjustHomeBtn,120);})();
-    </script>
     <header>
-      <h1>FreeMart</h1>
+      <h1>Reacher</h1>
       <nav>
         <a href="home.html">Home</a>
         <a href="login.html">Login</a>
@@ -83,7 +84,7 @@
               <input class="input" type="file" id="avatar" name="avatar" accept="image/*" />
             </div>
             <div class="ml-8">
-              <img id="avatarPreview" class="avatar-preview" alt="avatar preview" src="/public/assets/img/default-avatar.svg" />
+              <img id="avatarPreview" class="avatar-preview" alt="avatar preview" src="../public/assets/img/default-avatar.svg" />
             </div>
           </div>
 

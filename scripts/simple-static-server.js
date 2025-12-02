@@ -32,16 +32,20 @@ function sendFile(filePath, res) {
 }
 
 const server = http.createServer((req, res) => {
-  try {
-    // Normalize URL
-    let reqPath = decodeURI(new URL(req.url, `http://localhost`).pathname);
+    try {
+    // Normalize URL and strip leading slashes so path.join doesn't drop `root`
+    let reqPath = decodeURI(new URL(req.url, `http://localhost`).pathname || '/');
     if (reqPath === '/') reqPath = '/index.html';
+    // Remove leading slashes to avoid path.join treating it as absolute
+    const rel = reqPath.replace(/^[/\\]+/, '');
 
-    // map to file under frontend directory
-    const filePath = path.join(root, reqPath);
+    // map to file under frontend directory and resolve to absolute paths
+    const filePath = path.join(root, rel);
+    const resolved = path.resolve(filePath);
+    const resolvedRoot = path.resolve(root);
 
-    // Prevent path traversal
-    if (!filePath.startsWith(root)) {
+    // Prevent path traversal: require resolved starts with resolvedRoot
+    if (!resolved.startsWith(resolvedRoot)) {
       res.writeHead(403);
       res.end('Forbidden');
       return;

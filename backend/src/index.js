@@ -17,6 +17,10 @@ async function start() {
             console.log('RUN_MIGRATIONS=true — running sequelize migrations...');
             // run migrations via npx sequelize db:migrate
             child.execSync('npx sequelize db:migrate', { stdio: 'inherit' });
+        } else if (process.env.NODE_ENV === 'development') {
+            // In development, auto-sync models to create missing tables to ease local testing.
+            console.log('NODE_ENV=development — running sequelize.sync() to ensure tables exist');
+            await sequelize.sync();
         }
 
                 // Correct absolute path to frontend folder
