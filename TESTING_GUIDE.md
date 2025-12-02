@@ -1,4 +1,4 @@
-# FreeMart API - Quick Testing Guide
+# Reacher API - Quick Testing Guide
 
 ## 🚀 Quick Start
 

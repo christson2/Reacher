@@ -1,7 +1,7 @@
-# Setup helper for FreeMart (PowerShell)
+# Setup helper for Reacher (PowerShell)
 # Run this script to initialize the project locally
 
-Write-Output "========== FreeMart Setup =========="
+Write-Output "========== Reacher Setup =========="
 
 # Step 1: Install dependencies
 Write-Output "`n[1/5] Installing backend dependencies..."

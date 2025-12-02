@@ -1,8 +1,4 @@
--- Database schema placeholder for FreeMart
--- Add CREATE TABLE statements here for: users, roles, profiles, products, services,
--- requests, bids, videos, reviews, locations, notifications, sessions
-
--- Example users table (expand as needed)
+-- Database schema placeholder for Reacher
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,

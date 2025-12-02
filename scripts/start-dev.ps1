@@ -16,7 +16,7 @@ if ($env:FOREGROUND -eq '1') {
 	$backendPath = Join-Path $PSScriptRoot '..\backend'
 	$backendPath = (Resolve-Path -Path $backendPath).ProviderPath
 	$logPath = Join-Path $backendPath 'dev.log'
-	$job = Start-Job -Name "freemart-backend" -ScriptBlock {
+	$job = Start-Job -Name "reacher-backend" -ScriptBlock {
 		param($path,$log)
 		Set-Location -Path $path
 		# Run nodemon and append stdout/stderr to log

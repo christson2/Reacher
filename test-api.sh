@@ -1,5 +1,5 @@
 #!/bin/bash
-# FreeMart API Integration Test Script
+# Reacher API Integration Test Script
 # This script tests all major API endpoints
 
 API_BASE="http://localhost:4000/api"
@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo -e "${YELLOW}========================================${NC}"
-echo -e "${YELLOW}FreeMart Backend API Integration Tests${NC}"
+echo -e "${YELLOW}Reacher Backend API Integration Tests${NC}"
 echo -e "${YELLOW}========================================${NC}\n"
 
 # Test 1: Login

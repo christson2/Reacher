@@ -1,8 +1,8 @@
 # USSD Flow (placeholder)
 
-Basic USSD menu skeleton for FreeMart:
+Basic USSD menu skeleton for Reacher:
 
-1. Welcome: "Welcome to FreeMart - 1: Search 2: Create Account"
+1. Welcome: "Welcome to Reacher - 1: Search 2: Create Account"
 2. Search: Enter town/city or use stored location
 3. List categories or keyword search
 4. Select provider from list (numbered), show phone/contact
