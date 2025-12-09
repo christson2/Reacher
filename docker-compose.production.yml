@@ -1,0 +1,202 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # MICROSERVICES
+  # ==========================================
+
+  auth-service:
+    build: ./backend/auth-service
+    container_name: reacher-auth
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  user-service:
+    build: ./backend/user-service
+    container_name: reacher-user
+    ports:
+      - "5002:5002"
+    environment:
+      - NODE_ENV=production
+      - PORT=5002
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  product-service:
+    build: ./backend/product-service
+    container_name: reacher-product
+    ports:
+      - "5003:5003"
+    environment:
+      - NODE_ENV=production
+      - PORT=5003
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  provider-service:
+    build: ./backend/provider-service
+    container_name: reacher-provider
+    ports:
+      - "5004:5004"
+    environment:
+      - NODE_ENV=production
+      - PORT=5004
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  trust-service:
+    build: ./backend/trust-service
+    container_name: reacher-trust
+    ports:
+      - "5005:5005"
+    environment:
+      - NODE_ENV=production
+      - PORT=5005
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  message-service:
+    build: ./backend/message-service
+    container_name: reacher-message
+    ports:
+      - "5006:5006"
+    environment:
+      - NODE_ENV=production
+      - PORT=5006
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5006/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  notification-service:
+    build: ./backend/notification-service
+    container_name: reacher-notification
+    ports:
+      - "5007:5007"
+    environment:
+      - NODE_ENV=production
+      - PORT=5007
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5007/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      - postgres
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  # ==========================================
+  # DATABASE
+  # ==========================================
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: reacher-postgres
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/supabase-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+  # ==========================================
+  # CACHE (Optional)
+  # ==========================================
+
+  redis:
+    image: redis:7-alpine
+    container_name: reacher-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - redis_data:/data
+    networks:
+      - reacher-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  reacher-network:
+    driver: bridge
